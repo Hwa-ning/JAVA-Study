@@ -1,0 +1,90 @@
+# Java Stream
+- Java 8에서 추가
+- 데이터 소스를 추상화하고, 데이터를 다루는데 자주 사용되는 메소드들을 정의함.
+- Collection or Iterator와 같은 인터페이스를 이용해서 컬렉션을 다루도록 표준화 했지만, 각 컬렉션 클래스에서 같은 기능의 메소드들이 중복해서 정의 되어 있음.
+    - ex) List를 정렬할때는 Collection.sort(), Array를 정렬할때는 Array.sort()를 사용
+    - 데이터 소스마다 다른 방식으로 다뤄야하는 문제점을 해결해주는 것이 Stream임.
+- 배열이나 Collection을 다루며 필터링, 매핑을 통해 원하는 결과 도출해낼 수 있음
+- Thread를 활용한 Multi processing이 가능함
+- Stream은 Read Only하여 원래의 데이터 변경 없이 데이터소스로부터 값을 읽기만 함
+    - Stream에서 sorting을 이용해 값을 정렬해도 기존 데이터에서의 영향은 없음
+
+- Iterator처럼 일회용으로 다시 사용하기 위해선 다시 스트림을 생성해야함.
+- 최종연산 후에는 Stream이 닫힘
+
+
+- 지연된 연산 : 최종 연산 전까지 중간 연산이 실행되지 않음
+- Stream 과정
+    - 선언 및 초기화
+    - 중간 연산
+    - 최종 연산(단, 1번만 가능함)
+## 선언
+- Collection의 경우 .stream()으로 스트림 변환
+    ``` Java
+    Stream<Integer> stream = Arrays.asList(1, 2, 3, 4, 5).stream();
+    ```
+- 객체 배열로부터 스트림 생성
+    ``` Java
+    Stream.of("a", "b", "c");
+    Stream.of(new String[]{"a", "b", "c"});
+    Arrays.stream(new String[]{"a", "b", "c"});
+    Arrays.stream(new String[]{"a", "b", "c"}, startIndex, EndIndex+1);
+    ```
+- iterate()
+    ``` Java
+    Stream.iterate(T seed, UnaryOperator f); 이전 결과에 종속적
+    Stream.iterate(0, n->n+2); //0, 2, 4, ... 무한 스트림
+    ```
+
+- generate()
+    ```Java
+    Stream.generate(Math::random);
+    Stream.generate(()->1);
+    ```
+generate는 초기값 지정x, 이전 결과와 무관하다.
+
+## 중간연산
+- .distinct()
+    - 중복제거
+- .filter(Predicate<T> predicate)
+    - 조건에 안 맞는 요소 제외
+- .limit(long maxSize)
+    - maxSize 이후의 요소는 걸러짐
+- .skip(long n)
+    - 앞에서부터 n개 생략
+- .sorted()
+    - 기본 정렬로 정렬
+- .sorted(Comparator<T> comparator)
+    - 조건에 맞게 요소 정렬. 추가 정렬 기준을 제공할 때는 thenComparing()사용
+    
+- .map(Function<T> mapper) 
+    - 스트림의 요소를 변환. ex) map(File::getName), map(s->s.subString(3))
+    
+.peek(Consumer<T> action)
+    - 요소에 작업수행. 보통 중간 작업결과 확인으로 사용. peek(s->System.out.println(s))
+
+ //스트림의 스트림을 스트림으로 변환
+ //ex) Stream<String> strStrm=strArrStrm.flatMap(Arrays::stream)
+.flatMap()
+
+## 최종연산
+void forEach(Consumer<? super T> action) //각 요소에 지정된 작업 수행
+void forEachOrdered(Consumer<? super T> action) //병렬 스트림의 경우 순서를 유지하며 수행
+long count() //스트림의 요소 개수 반환
+    
+Optional<T> max(Comparator<? super T> comparator) //스트림의 최대값 반환
+Optional<T> min(Comparator<? super T> comparator) //스트림의 최소값 반환
+    
+Optional<T> findAny() //아무거나 하나 반환. 벙렬 스트림에 사용
+Optional<T> findFirst() //첫 번째 요소 반환. 순차 스트림에 사용
+    
+boolean allMatch(Predicate<T> p) //모든 조건을 만족?
+boolean anyMatch(Predicate<T> p) //조건을 하나라도 만족?
+boolean noneMatch(Predicate<T> p) //모든 조건을 만족하지 않음?
+    
+Object[] toArray() //모든 요소를 배열로 반환
+A[] toArray(IntFunction<A[]> generator) //특정 타입의 배열로 반환
+    
+//스트림의 요소를 하나씩 줄여가면서 계산
+//아래에서 자세히 보자
+Optional<T> reduce(BinaryOperator<T> accumulator)
