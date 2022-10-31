@@ -95,3 +95,111 @@ public class Main{
     }
 }
 ```
+### 데코레이터 패턴을 사용한 자동차 Class
+``` Java
+interface Car {
+    void drive();
+}
+
+class KiaCar implements Car {
+    @Override
+    public void drive() {
+        System.out.print("기아차 운행중");
+    }
+}
+
+class HyundaiCar implements Car {
+    @Override
+    public void drive() {
+        System.out.print("현대차 운행중");
+    }
+}
+
+class CarDecorator implements Car {
+    private final Car car;
+
+    public CarDecorator(Car car) {
+        this.car = car;
+    }
+
+    @Override
+    public void drive() {
+        car.drive();
+    }
+}
+
+class HybridDecorator extends CarDecorator {
+
+    public HybridDecorator(Car car) {
+        super(car);
+    }
+
+    @Override
+    public void drive() {
+        super.drive();
+        System.out.print(" + 하이브리드"); // +++++
+    }
+}
+
+class HudDecorator extends CarDecorator {
+
+    public HudDecorator(Car car) {
+        super(car);
+    }
+
+    @Override
+    public void drive() {
+        super.drive();
+        System.out.print(" + HUD");
+    }
+}
+
+class NavigationDecorator extends CarDecorator {
+
+    public NavigationDecorator(Car car) {
+        super(car);
+    }
+
+    @Override
+    public void drive() {
+        super.drive();
+        System.out.print(" + 네비게이션");
+    }
+}
+
+
+public class Decorator {
+    public static void main(String[] args) {
+        Car sportage = new HybridDecorator(new KiaCar());
+        sportage.drive();
+        System.out.println("\n====================");
+
+        sportage = new HybridDecorator(sportage);
+        sportage.drive();
+        System.out.println("\n====================");
+
+        sportage = new NavigationDecorator(sportage);
+        sportage.drive();
+        System.out.println("\n====================");
+
+        sportage = new HudDecorator(sportage);
+        sportage.drive();
+
+        Car tucson = new HyundaiCar();
+        tucson.drive();
+        System.out.println("\n====================");
+
+        tucson = new HybridDecorator(tucson);
+        tucson.drive();
+        System.out.println("\n====================");
+
+        tucson = new NavigationDecorator(tucson);
+        tucson.drive();
+        System.out.println("\n====================");
+
+        tucson = new HudDecorator(tucson);
+        tucson.drive();
+    }
+}
+
+```
