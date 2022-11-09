@@ -12,4 +12,4 @@
 - Command : 실행될 기능에 대한 인터페이스, execute 메소드 선언
 - ConcreteCommand : 실제로 실행되는 기능을 구현, execute 메소드 구현
 
-- 예시 : 손님(Client) -> 사장,종업원(Invoker) -> 주방장,쉐프(Receiver) execute-> 조리(ConcreteCommand)
+- 예시 : 손님(Client) -> 사장,종업원(Receiver) -> 주방장,쉐프(Invoker) execute -> 조리(ConcreteCommand)
